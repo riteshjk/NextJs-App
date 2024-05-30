@@ -26,6 +26,9 @@ const ProductCart = ({ items, onViewDetails, onDelete, onUpdate }) => {
       <Text mt="2" fontWeight="bold" textAlign="center">
         {items.name}
       </Text>
+      <Text mt="2" fontWeight="bold" textAlign="center">
+        Price - {items.productPrice}
+      </Text>
       <Button mt="2" alignSelf="center" onClick={() => onViewDetails(items)}>
         View Details
       </Button>

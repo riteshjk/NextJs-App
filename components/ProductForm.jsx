@@ -17,7 +17,7 @@ const ProductForm = ({ product, onClose }) => {
     e.preventDefault();
     try {
       await dispatch(updateProduct({ ...product, name, description }));
-      onClose(); // Close the form modal after updating the product
+      onClose(); 
     } catch (error) {
       console.error('Error updating product:', error);
     }

@@ -14,7 +14,6 @@ const Layout = () => {
 
   return (
     <div>
-      <p>Front Page</p>
       <ProductList/>
     </div>
   )
