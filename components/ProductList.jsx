@@ -59,9 +59,10 @@ const ProductList = () => {
     setSelectedProduct(product);
     setIsModalOpen(true);
   };
-
+  
   const sortItems = () => {
     let sorted = [...items];
+   
     if (sortBy === 'lowToHigh') {
       sorted = sorted.sort((a, b) => a.productPrice - b.productPrice);
     } else if (sortBy === 'highToLow') {

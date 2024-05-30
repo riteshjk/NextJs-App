@@ -54,7 +54,7 @@ const productSlice = createSlice({
         }
         state.status = 'succeeded';
         state.loadingMore = false;
-        state.page = action.payload.page;  // Set the page to the current fetched page
+        state.page = action.payload.page;  
         state.hasMore = action.payload.data.length > 0;
       })
       .addCase(fetchProducts.rejected, (state) => {
