@@ -1,7 +1,7 @@
 import React from 'react';
-import { Box, Button, Image, Text } from '@chakra-ui/react';
+import { Box, Button, HStack, Image, Text } from '@chakra-ui/react';
 
-const ProductCart = ({ items,onViewDetails }) => {
+const ProductCart = ({ items, onViewDetails, onDelete, onUpdate }) => {
   return (
     <Box 
       borderWidth="1px"
@@ -13,13 +13,13 @@ const ProductCart = ({ items,onViewDetails }) => {
       width="100%"
       display="flex"
       flexDirection="column"
-      alignItems="center" // Center child elements horizontally
+      alignItems="center"
     >
       <Image 
         src={items.avatar === "" ? "https://via.placeholder.com/150" : items.avatar} 
         alt={items.name} 
         width="100%"
-        height="200px"
+        height="300px"
         objectFit="cover"
         mx="auto"
       />
@@ -29,6 +29,14 @@ const ProductCart = ({ items,onViewDetails }) => {
       <Button mt="2" alignSelf="center" onClick={() => onViewDetails(items)}>
         View Details
       </Button>
+      <HStack mt="2" spacing="2">
+        <Button size="sm" colorScheme="blue" onClick={() => onUpdate(items)}>
+          Update
+        </Button>
+        <Button size="sm" colorScheme="red" onClick={() => onDelete(items.id)}>
+          Delete
+        </Button>
+      </HStack>
     </Box>
   );
 };

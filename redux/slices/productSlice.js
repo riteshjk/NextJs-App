@@ -3,13 +3,17 @@ import axios from 'axios';
 
 const API_URL = 'https://65d5af42f6967ba8e3bc35a3.mockapi.io/blogs/v1/articles';
 
-export const fetchProducts = createAsyncThunk(
-  'products/fetchProducts',
-  async (page = 1) => {
-    const response = await axios.get(`${API_URL}?page=${page}&limit=10`);
-    return { data: response.data, page };
-  }
-);
+export const fetchProducts = createAsyncThunk('products/fetchProducts', async (page) => {
+  console.log(`Fetching products for page: ${page}`);
+  const response = await axios.get(`${API_URL}?page=${page}&limit=5`);
+  console.log('Response data:', response.data);
+  return { data: response.data, page };
+});
+
+export const updateProductAsync = createAsyncThunk('products/updateProduct', async (product) => {
+  const response = await axios.put(`${API_URL}/${product.id}`, product);
+  return response.data; 
+});
 
 const productSlice = createSlice({
   name: 'products',
@@ -18,7 +22,7 @@ const productSlice = createSlice({
     status: null,
     page: 1,
     hasMore: true,
-    loadingMore: false, 
+    loadingMore: false,
   },
   reducers: {
     addProduct: (state, action) => {
@@ -26,7 +30,9 @@ const productSlice = createSlice({
     },
     updateProduct: (state, action) => {
       const index = state.items.findIndex(product => product.id === action.payload.id);
-      state.items[index] = action.payload;
+      if (index !== -1) {
+        state.items[index] = action.payload;
+      }
     },
     deleteProduct: (state, action) => {
       state.items = state.items.filter(product => product.id !== action.payload);
@@ -34,22 +40,27 @@ const productSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      .addCase(fetchProducts.pending, (state, action) => {
-        state.status = state.items.length === 0 ? 'loading' : state.status;
-        state.loadingMore = state.items.length > 0; 
+      .addCase(fetchProducts.pending, (state) => {
+        console.log('Fetch products pending');
+        state.loadingMore = true;
+        state.status = 'loading';
       })
       .addCase(fetchProducts.fulfilled, (state, action) => {
-        if (action.payload.data.length < 10) {
-          state.hasMore = false;
+        console.log('Fetch products fulfilled', action.payload);
+        if (action.payload.page === 1) {
+          state.items = action.payload.data;
+        } else {
+          state.items = [...state.items, ...action.payload.data];
         }
-        state.items = [...state.items, ...action.payload.data];
         state.status = 'succeeded';
-        state.page = action.payload.page + 1;
-        state.loadingMore = false; 
+        state.loadingMore = false;
+        state.page = action.payload.page;  // Set the page to the current fetched page
+        state.hasMore = action.payload.data.length > 0;
       })
       .addCase(fetchProducts.rejected, (state) => {
+        console.log('Fetch products rejected');
         state.status = 'failed';
-        state.loadingMore = false; 
+        state.loadingMore = false;
       });
   },
 });

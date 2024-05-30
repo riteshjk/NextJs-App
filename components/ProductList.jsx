@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { Box, Spinner, Text, SimpleGrid } from '@chakra-ui/react';
 import ProductCart from './ProductCart';
-import { fetchProducts } from '@/redux/slices/productSlice';
+import { fetchProducts, deleteProduct } from '@/redux/slices/productSlice';
 import ProductDetailModal from './ProductDetail';
 
 const ProductList = () => {
@@ -14,24 +14,42 @@ const ProductList = () => {
 
   useEffect(() => {
     if (status === null) {
-      dispatch(fetchProducts());
+      dispatch(fetchProducts(page));
     }
-  }, [dispatch, status]);
+  }, [dispatch, status, page]);
 
   const fetchMoreData = () => {
+    console.log('Fetching more data:', page, loadingMore, hasMore);
     if (!loadingMore && hasMore) {
-      dispatch(fetchProducts(page));
+      dispatch(fetchProducts(page + 1));
     }
   };
 
-  const handleViewDetails =(product) =>{
+  useEffect(() => {
+    console.log('Items:', items);
+    console.log('Status:', status);
+    console.log('Page:', page);
+    console.log('HasMore:', hasMore);
+    console.log('LoadingMore:', loadingMore);
+  }, [items, status, page, hasMore, loadingMore]);
+
+  const handleViewDetails = (product) => {
     setSelectedProduct(product);
     setIsModalOpen(true);
-  }
+  };
 
   const handleCloseModal = () => {
     setIsModalOpen(false);
     setSelectedProduct(null);
+  };
+
+  const handleDelete = (id) => {
+    dispatch(deleteProduct(id));
+  };
+
+  const handleUpdate = (product) => {
+    setSelectedProduct(product);
+    setIsModalOpen(true);
   };
 
   return (
@@ -51,9 +69,15 @@ const ProductList = () => {
           </Box>
         }
       >
-        <SimpleGrid columns={{ base: 1, md: 2 }} spacing={6}>
+        <SimpleGrid columns={{ base: 1 }} spacing={6}>
           {items.map(item => (
-            <ProductCart key={item.id} items={item} onViewDetails={handleViewDetails}/>
+            <ProductCart
+              key={item.id}
+              items={item}
+              onViewDetails={handleViewDetails}
+              onDelete={handleDelete}
+              onUpdate={handleUpdate}
+            />
           ))}
         </SimpleGrid>
       </InfiniteScroll>
